@@ -1,20 +1,20 @@
 version: '3.7'
 
 services:
-  git:
-    container_name: dev_jenkins
-    image: jenkins/jenkins:lts
-    privileged: true
-    user: root
-    platform: linux/amd64
-    ports:
-      - '8085:8080'
-      - "50000:50000"
-    environment:
-      TZ: Asia/Seoul
-      volumes:
-        - ./jenkins_home:/var/jenkins_home
-    restart: on-failure:10
+#  git:
+#    container_name: dev_jenkins
+#    image: jenkins/jenkins:lts
+#    privileged: true
+#    user: root
+#    platform: linux/amd64
+#    ports:
+#      - '8085:8080'
+#      - "50000:50000"
+#    environment:
+#      TZ: Asia/Seoul
+#      volumes:
+#        - ./jenkins_home:/var/jenkins_home
+#    restart: on-failure:10
   db:
     container_name: mysql8
     image: mysql:8.0.20
@@ -29,10 +29,10 @@ services:
       - ./db/data:/var/lib/mysql
       - ./db/initdb.d:/docker-entrypoint-initdb.d
     restart: always
-  test:
-    container_name: test_web
-    image:
-    platform: linux/amd64
-    ports:
-      - '9907:3306'
-    environment:
+#  test:
+#    container_name: test_web
+#    image:
+#    platform: linux/amd64
+#    ports:
+#      - '9907:3306'
+#    environment:
