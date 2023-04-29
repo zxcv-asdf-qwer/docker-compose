@@ -1,1 +1,3 @@
-flyway로 할거지?
+revoke all on *.* from root@'%';
+DROP USER 'root'@'%';
+FLUSH PRIVILEGES;
