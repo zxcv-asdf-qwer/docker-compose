@@ -1,3 +1,53 @@
 # docker_init
 
-도커
+## docker-compose
+~~~
+mysql
+spring boot application x α
+~~~
+
+# Getting Started
+
+`docker-compose.yaml` 파일이 있는 디렉토리로 이동한 후에 다음 명령어를 실행하면 됩니다.
+
+```
+docker-compose up
+```
+
+이 명령어는 `docker-compose.yaml` 파일을 기반으로 하여 Docker 컨테이너를 실행합니다. 만약 백그라운드에서 실행하고 싶다면 `-d` 옵션을 추가하면 됩니다.
+
+```
+docker-compose up -d
+``` 
+
+컨테이너를 종료하려면 다음 명령어를 실행합니다.
+
+```
+docker-compose down
+``` 
+
+컨테이너를 다시 빌드하려면 `--build` 옵션을 추가하면 됩니다.
+
+```
+docker-compose up --build
+```
+
+---
+
+`mysql -u root -p` 명령어는 MySQL 데이터베이스에 root 계정으로 로그인하는 명령어입니다. `-u` 옵션으로 로그인할 계정을 지정하고 `-p` 옵션을 사용하면 비밀번호를 입력할 수 있습니다.
+
+실행하면 비밀번호를 입력하는 프롬프트가 나타납니다. MySQL의 root 계정 비밀번호를 입력하면 로그인할 수 있습니다.
+
+```
+mysql -u root -p
+```
+---
+`docker-entrypoint-initdb.d` 디렉토리에 위치한 스크립트 파일들이 실행되며 초기 데이터를 삽입합니다. 이를 통해 컨테이너가 시작될 때 초기 데이터를 삽입할 수 있습니다.
+
+```
+2023-04-29 22:53:06 mysql8  | 2023-04-29T13:53:06.075735Z 0 [ERROR] [MY-010457] [Server] --initialize specified but the data directory has files in it. Aborting.
+2023-04-29 22:53:06 mysql8  | 2023-04-29T13:53:06.075941Z 0 [ERROR] [MY-013236] [Server] The designated data directory /var/lib/mysql/ is unusable. You can remove all files that the server added to it.
+2023-04-29 22:53:06 mysql8  | 2023-04-29T13:53:06.078470Z 0 [ERROR] [MY-010119] [Server] Aborting
+```
+
+해당 오류는 MySQL이 --initialize 옵션을 사용하여 데이터베이스 파일을 초기화하려고 했지만, 데이터 디렉토리에 이미 파일이 존재해서 오류가 발생한 것입니다. 따라서 해당 오류를 해결하려면, 데이터 디렉토리를 삭제하거나 이전 데이터를 백업해두고 초기화를 다시 실행해야 합니다.
