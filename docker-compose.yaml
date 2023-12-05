@@ -1,7 +1,93 @@
 version: '3.7'
 
 services:
-#  git:
+  postgresql:
+    container_name: postgres15
+    image: postgres:15.5-alpine3.18
+    platform: linux/amd64
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres:/data/postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      PGDATA: /data/postgres
+    networks:
+      - postgres
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+  pgadmin:
+#    postgresql(container name) hostname
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    ports:
+      - '5050:80'
+    networks:
+      - postgres
+    logging:
+      driver: "none"
+  mysql:
+    container_name: mysql8
+    image: mysql:8.0.27
+    platform: linux/amd64
+    ports:
+      - '3309:3306'
+    env_file: .env
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ./db/conf.d:/etc/mysql/conf.d
+      - ./db/data:/var/lib/mysql
+      - ./db/initdb.d:/docker-entrypoint-initdb.d
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+  keycloak: #http://localhost:8180/admin/
+    container_name: keycloak
+    build:
+      context: ./keycloak
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+    ports:
+      - '8180:8080'
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command:
+      - start-dev
+    volumes:
+    - ./keycloak/themes:/opt/keycloak/themes
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    platform: linux/amd64
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    env_file: .env
+    volumes:
+      - ./mailhog/maildir:/tmp/mailhog
+      - ./mailhog/home:/home/mailhog
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /tmp/mailhog
+      MH_OUTGOING_SMTP: /home/mailhog/outgoing_smtp.json
+      MH_UI_WEB_PATH: mailhog
+#  jenkins:
 #    container_name: dev_jenkins
 #    image: jenkins/jenkins:lts
 #    privileged: true
@@ -15,24 +101,6 @@ services:
 #      volumes:
 #        - ./jenkins_home:/var/jenkins_home
 #    restart: on-failure:10
-  db:
-    container_name: mysql8
-    image: mysql:8.0.20
-    platform: linux/amd64
-    ports:
-      - '3309:3306'
-    env_file: .env
-    environment:
-      TZ: Asia/Seoul
-    volumes:
-      - ./db/conf.d:/etc/mysql/conf.d
-      - ./db/data:/var/lib/mysql
-      - ./db/initdb.d:/docker-entrypoint-initdb.d
-    restart: always
-#  test:
-#    container_name: test_web
-#    image:
-#    platform: linux/amd64
-#    ports:
-#      - '9907:3306'
-#    environment:
+networks:
+  postgres:
+    driver: bridge
