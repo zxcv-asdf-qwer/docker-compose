@@ -1,6 +1,41 @@
 version: '3.7'
 
 services:
+  postgresql:
+    container_name: postgres15
+    image: postgres:15.5-alpine3.18
+    platform: linux/amd64
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres:/data/postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      PGDATA: /data/postgres
+    networks:
+      - postgres
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+  pgadmin:
+#    postgresql(container name) hostname
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    ports:
+      - '5050:80'
+    networks:
+      - postgres
+    logging:
+      driver: "none"
   mysql:
     container_name: mysql8
     image: mysql:8.0.27
@@ -52,3 +87,7 @@ services:
       MH_MAILDIR_PATH: /tmp/mailhog
       MH_OUTGOING_SMTP: /home/mailhog/outgoing_smtp.json
       MH_UI_WEB_PATH: mailhog
+
+networks:
+  postgres:
+    driver: bridge

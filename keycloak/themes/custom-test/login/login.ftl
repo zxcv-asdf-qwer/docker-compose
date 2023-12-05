@@ -17,7 +17,7 @@
     <#elseif section = "form">
       <#if realm.password>
         <div class="app-form-wrapper">
-          <form id="kc-form-login" class="app-form" onsubmit="return true;" action="${url.loginAction}" method="post">
+          <form id="kc-form-login" class="app-form" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
             <label>
               <div>이메일 또는 아이디</div>
               <input id="username" class="login-field" type="text" name="username">
@@ -27,6 +27,7 @@
               <div>비밀번호</div>
               <input id="password" class="login-field" type="password" name="password">
             </label>
+            <input type="hidden" id="id-hidden-input" name="credentialId">
             <button class="submit" type="submit">로그인</button>
           </form>
         </div>
