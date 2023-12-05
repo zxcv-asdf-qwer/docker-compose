@@ -2,7 +2,12 @@
 
 ## docker-compose
 ~~~
+postgresql
+pgadmin
 mysql
+keycloak
+mailhog
+jenkins
 spring boot application x α
 ~~~
 
