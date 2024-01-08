@@ -140,6 +140,6 @@ Desktop.ini
 ######################
 .eslintcache
 
-/db/data/
+/mysql/db/data/
 
 /mailhog/
