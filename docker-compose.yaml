@@ -1,0 +1,41 @@
+services:
+  postgresql:
+    container_name: postgres16
+    image: postgres:16.3-alpine3.20
+    ports:
+      - 9279:5432
+    volumes:
+      - ./postgres/db/data:/data/postgres
+      - ./postgres/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: $KC_DB_PASSWORD
+      POSTGRES_MULTIPLE_DATABASES: database1,keycloak
+      PGDATA: /data/postgres
+      TZ: Asia/Seoul
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+  keycloak:  #http://localhost:8180/admin/
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:24.0
+    depends_on:
+      - postgresql
+    ports:
+      - 9280:8080
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=password
+      - KC_HOSTNAME_DEBUG=true
+      - KC_HOSTNAME=$KC_HOSTNAME
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://localhost:9279/keycloak
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=$KC_DB_PASSWORD
+      - QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY=true
+      - KC_PROXY=edge
+      - PROXY_ADDRESS_FORWARDING=true
+    command:
+      - start
